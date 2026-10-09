@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from pathlib import Path
 
@@ -29,6 +29,8 @@ MIN_DETECTION_CONFIDENCE = 0.60
 MIN_TRACKING_CONFIDENCE = 0.60
 HAND_PADDING_PIXELS = 20
 NORMALIZE_HANDEDNESS = True
+MASK_HAND_BACKGROUND = True
+HAND_MASK_DILATION = 20
 
 MODEL_INPUT_SIZE = (128, 128)
 MODEL_INPUT_CHANNELS = 1

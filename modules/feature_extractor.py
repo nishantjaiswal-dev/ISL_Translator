@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
@@ -32,12 +32,41 @@ class FeatureExtractor:
 
     def extract(self, frame, detection: HandDetection) -> np.ndarray:
         crop = self._crop_hand(frame, detection.bbox)
+        if getattr(config, "MASK_HAND_BACKGROUND", False) and detection.landmarks:
+            crop = self._apply_hand_mask(crop, frame.shape[:2], detection)
         gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
         resized = cv2.resize(gray, self.config.target_size, interpolation=cv2.INTER_AREA)
         normalized = resized.astype(np.float32) / 255.0
         normalized = np.expand_dims(normalized, axis=-1)
         normalized = np.expand_dims(normalized, axis=0)
         return normalized
+
+    def _apply_hand_mask(self, crop: np.ndarray, frame_shape: tuple[int, int], detection: HandDetection) -> np.ndarray:
+        frame_h, frame_w = frame_shape
+        bbox = detection.bbox
+        crop_h, crop_w = crop.shape[:2]
+        pts = []
+        for lm in detection.landmarks:
+            px = int(lm.x * frame_w) - bbox.x_min
+            py = int(lm.y * frame_h) - bbox.y_min
+            px = max(0, min(crop_w - 1, px))
+            py = max(0, min(crop_h - 1, py))
+            pts.append([px, py])
+
+        if len(pts) < 3:
+            return crop
+
+        pts_arr = np.array(pts, dtype=np.int32)
+        hull = cv2.convexHull(pts_arr)
+        mask = np.zeros((crop_h, crop_w), dtype=np.uint8)
+        cv2.fillConvexPoly(mask, hull, 255)
+
+        dilation = getattr(config, "HAND_MASK_DILATION", 20)
+        if dilation > 0:
+            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (dilation, dilation))
+            mask = cv2.dilate(mask, kernel)
+
+        return cv2.bitwise_and(crop, crop, mask=mask)
 
     def _build_config(self, model_input_shape: tuple[int | None, ...] | None) -> ImagePreprocessorConfig:
         shape = self._normalize_input_shape(model_input_shape)
