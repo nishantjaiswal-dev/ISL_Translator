@@ -1,0 +1,57 @@
+﻿from __future__ import annotations
+
+from pathlib import Path
+
+
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_DIR = BASE_DIR / "models"
+LOG_DIR = BASE_DIR / "logs"
+ASSET_DIR = BASE_DIR / "assets"
+
+MODEL_FILENAME = "isl_model.h5"
+LABELS_FILENAME = "labels.json"
+MODEL_INFO_FILENAME = "model_info.json"
+
+MODEL_PATH = MODEL_DIR / MODEL_FILENAME
+LABELS_PATH = MODEL_DIR / LABELS_FILENAME
+MODEL_INFO_PATH = MODEL_DIR / MODEL_INFO_FILENAME
+
+APP_NAME = "ISL Translator"
+WINDOW_NAME = "ISL Translator - Real-Time Sign Assistant"
+
+CAMERA_INDEX = 0
+FRAME_WIDTH = 1280
+FRAME_HEIGHT = 720
+TARGET_FPS = 30
+
+MAX_HANDS = 2
+MIN_DETECTION_CONFIDENCE = 0.60
+MIN_TRACKING_CONFIDENCE = 0.60
+HAND_PADDING_PIXELS = 20
+NORMALIZE_HANDEDNESS = True
+
+MODEL_INPUT_SIZE = (128, 128)
+MODEL_INPUT_CHANNELS = 1
+DEFAULT_MODEL_INPUT_SHAPE = (128, 128, 1)
+
+CONFIDENCE_THRESHOLD = 0.80
+PREDICTION_BUFFER_SIZE = 7
+PREDICTION_MIN_VOTES = 4
+LETTER_HOLD_TIME = 1.0
+
+TTS_RATE = 165
+TTS_VOLUME = 1.0
+
+DEFAULT_IMAGE_NORMALIZATION = "zero_one"
+
+CONTROL_DELETE_LABELS = {"delete", "del", "backspace"}
+CONTROL_SPACE_LABELS = {"space", "blank"}
+CONTROL_CLEAR_LABELS = {"clear", "reset"}
+CONTROL_IGNORE_LABELS = {"nothing", "none", "no_hand", "unknown"}
+
+KEY_QUIT = ord("q")
+KEY_SPEAK = ord("s")
+KEY_CLEAR = ord("c")
+KEY_SPACE = ord(" ")
+KEY_ENTER = 13
+KEY_BACKSPACE = 8
